@@ -1,0 +1,18 @@
+{
+  "name": "expressspa",
+  "version": "1.0.0",
+  "description": "SPA",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "keywords": [
+    "spa"
+  ],
+  "author": "Uriel",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

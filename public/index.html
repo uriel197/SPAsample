@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self';">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+    <title>Space shutter</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=Bellefair&family=Barlow:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <!-- provides metadata to make the PWA installable on devices. -->
+    <link rel="apple-touch-icon" href="images/icons/icon.png" />
+    <link rel="icon" href="images/icons/icon.png" />
+  </head>
+
+  <body>
+    <a class="skip-to-content" href="#main">Skip to main content</a>
+    <header class="primary-header flex">
+      <div>
+        <img
+          src="./assets/shared/logo.svg"
+          alt="site icon"
+          class="logo"
+        />
+      </div>
+      <button class="mobile-nav-toggle" aria-controls="primary-navigation"><span class="sr-only" aria-expanded="false">Menu</span></button>
+      <nav>
+        <ul class="primary-navigation underline-indicators flex" data-visible="false">
+          <li class="active">
+            <a
+              class="navlink ff-sans-cond uppercase text-white letter-spacing-2"
+              href="/"
+              ><span aria-hidden="true">00</span>Home</a
+            >
+          </li>
+          <li>
+            <a
+              class="navlink ff-sans-cond uppercase text-white letter-spacing-2"
+              href="/destination"
+              ><span aria-hidden="true">01</span>Destination</a
+            >
+          </li>
+          <li>
+            <a
+              class="navlink ff-sans-cond uppercase text-white letter-spacing-2"
+              href="/crew"
+              ><span aria-hidden="true">02</span>Crew</a
+            >
+          </li>
+          <li>
+            <a
+              class="navlink ff-sans-cond uppercase text-white letter-spacing-2"
+              href="/technology"
+              ><span aria-hidden="true">03</span>Technology</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main id="main" tabindex="-1"></main>
+
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
+<!-- to run the file type "npx serve app.js" in the terminal -->
+<!-- ************* Comments ****************
