@@ -15,27 +15,26 @@ class DestinationPage extends HTMLElement {
     }
     this.destinations =
       app.state.menu.find((cat) => cat.name === "destinations")?.content || [];
-    console.log(this.destinations);
-
-    // Set initial selected item from dataset or default to first
-    const selectedName =
-      //   this.dataset.selected?.toLowerCase() ||
-      this.destinations[0]?.name.toLowerCase();
-    console.log(selectedName);
-
-    app.setState({ selected: selectedName });
-
-    // Listen for state changes
-    document.addEventListener("statechange", () => this.render());
+    window.addEventListener("hashchange", this.handleHashChange.bind(this));
 
     // Initial render
     this.render();
   }
 
+  disconnectedCallback() {
+    window.removeEventListener("hashchange", this.handleHashChange.bind(this));
+  }
+
+  handleHashChange() {
+    const hash = location.hash.replace("#/", "").toLowerCase();
+    if (this.destinations.some((dest) => dest.name.toLowerCase() === hash)) {
+      this.dataset.selected = hash;
+      this.render();
+    }
+  }
+
   render() {
-    const selected =
-      app.state.selected?.toLowerCase() ||
-      this.destinations[0]?.name.toLowerCase();
+    const selected = this.dataset.selected || "moon";
     this.innerHTML = `
         <div class="grid-container grid-container--destination flow">
           <h1 class="numbered-title"><span aria-hidden="true">01</span> Pick your destination</h1>
@@ -55,9 +54,9 @@ class DestinationPage extends HTMLElement {
             ${this.destinations
               .map(
                 (dest) => `
-                  <button aria-selected="${
-                    dest.name.toLowerCase() === selected
-                  }" role="tab" aria-controls="${dest.name.toLowerCase()}-tab"
+                  <button name=${dest.name.toLowerCase()} aria-selected="${
+                  dest.name.toLowerCase() === selected
+                }" role="tab" aria-controls="${dest.name.toLowerCase()}-tab"
                     class="uppercase ff-sans-cond text-accent letter-spacing-2"
                     tabindex="${dest.name.toLowerCase() === selected ? 0 : -1}"
                     data-image="${dest.name.toLowerCase()}-image">${

@@ -13,19 +13,26 @@ class TechnologyPage extends HTMLElement {
     }
     this.technologies =
       app.state.menu.find((cat) => cat.name === "technology")?.content || [];
-    const selectedName =
-      this.dataset.selected?.toLowerCase().replace(" ", "") ||
-      this.technologies[0]?.name.toLowerCase().replace(" ", "");
-    app.setState({ selected: selectedName });
-
-    document.addEventListener("statechange", () => this.render());
+    window.addEventListener("hashchange", this.handleHashChange.bind(this));
+    // Initial render
     this.render();
   }
 
+  disconnectedCallback() {
+    window.removeEventListener("hashchange", this.handleHashChange.bind(this));
+  }
+
+  handleHashChange() {
+    const hash = location.hash.replace("#/", "").toLowerCase();
+    if (this.technologies.some((tech) => tech.name.toLowerCase() === hash)) {
+      this.dataset.selected = hash;
+      this.render();
+    }
+  }
+
   render() {
-    const selected =
-      app.state.selected?.toLowerCase().replace(" ", "") ||
-      this.technologies[0]?.name.toLowerCase().replace(" ", "");
+    const selected = this.dataset.selected || "launch-vehicle";
+
     this.innerHTML = `
         <div class="grid-container grid-container--technology">
           <h1 class="numbered-title"><span aria-hidden="true">03</span>Space launch 101</h1>
@@ -41,7 +48,10 @@ class TechnologyPage extends HTMLElement {
                   <source srcset="${
                     tech.images.portrait
                   }" media="(min-width: 55em)">
-                  <img src="${tech.images.landscape}" alt="${tech.name}">
+                  <img src="${tech.images.landscape}" alt="${
+                tech.name
+              }" type="image/webp">
+                <source srcset="${tech.images.landscape}" type="image/webp">
                 </picture>
               `
             )
@@ -50,20 +60,12 @@ class TechnologyPage extends HTMLElement {
             ${this.technologies
               .map(
                 (tech, index) => `
-                  <button class="fs-500" aria-selected="${
-                    tech.name.toLowerCase().replace(" ", "") === selected
-                  }"
-                    aria-controls="${tech.name
-                      .toLowerCase()
-                      .replace(" ", "")}-tab" role="tab"
-                    tabindex="${
-                      tech.name.toLowerCase().replace(" ", "") === selected
-                        ? 0
-                        : -1
-                    }"
-                    data-image="${tech.name
-                      .toLowerCase()
-                      .replace(" ", "")}-image">${index + 1}
+                  <button name=${tech.name.toLowerCase()} class="fs-500" aria-selected="${
+                  tech.name.toLowerCase() === selected
+                }"
+                    aria-controls="${tech.name.toLowerCase()}-tab" role="tab"
+                    tabindex="${tech.name.toLowerCase() === selected ? 0 : -1}"
+                    data-image="${tech.name.toLowerCase()}-image">${index + 1}
                     <span class="sr-only">${tech.name}</span>
                   </button>
                 `
@@ -74,12 +76,8 @@ class TechnologyPage extends HTMLElement {
             .map(
               (tech) => `
                 <article class="technology-details flow" role="tabpanel"
-                  id="${tech.name.toLowerCase().replace(" ", "")}-tab"
-                  ${
-                    tech.name.toLowerCase().replace(" ", "") !== selected
-                      ? "hidden"
-                      : ""
-                  }>
+                  id="${tech.name.toLowerCase()}-tab"
+                  ${tech.name.toLowerCase() !== selected ? "hidden" : ""}>
                   <header class="flow">
                     <h2 class="fs-400 ff-serif uppercase">The terminology...</h2>
                     <p class="fs-700 uppercase ff-serif">${tech.name}</p>

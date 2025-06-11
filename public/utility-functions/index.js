@@ -1,3 +1,5 @@
+import { app } from "../services/Menu.js";
+
 // Reuse tabs.js logic
 export function changeTabFocus(e) {
   const rightArrow = 39;
@@ -22,10 +24,13 @@ export function changeTabFocus(e) {
 
 export function changeTabPanel(e) {
   const targetTab = e.target;
+  if (!targetTab) return;
   const dataImage = targetTab.getAttribute("data-image");
   const targetPanel = targetTab.getAttribute("aria-controls");
+  const name = targetTab.getAttribute("name").toLowerCase();
+  console.log("this:", this);
 
-  this.querySelector('[aria-selected="true"]').setAttribute(
+  this.querySelector('[aria-selected="true"]')?.setAttribute(
     "aria-selected",
     false
   );
@@ -40,4 +45,7 @@ export function changeTabPanel(e) {
     panel.setAttribute("hidden", true)
   );
   this.querySelector(`#${targetPanel}`).removeAttribute("hidden");
+
+  this.dataset.selected = name;
+  window.location.hash = `#/${name}`;
 }

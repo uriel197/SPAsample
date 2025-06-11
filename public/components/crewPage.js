@@ -10,30 +10,30 @@ class CrewPage extends HTMLElement {
   async connectedCallback() {
     if (!app.state.menu) {
       await loadData();
-      console.log(app.state.menu);
     }
     this.crew =
       app.state.menu.find((cat) => cat.name === "crew")?.content || [];
-    console.log(this.crew);
-
-    // Set initial selected item from dataset or default to first
-    const selectedName =
-      //   this.dataset.selected?.toLowerCase() ||
-      this.crew[0]?.name.toLowerCase();
-    console.log(selectedName);
-
-    app.setState({ selected: selectedName });
-
-    // Listen for state changes
-    document.addEventListener("statechange", () => this.render());
-
+    window.addEventListener("hashchange", this.handleHashChange.bind(this));
     // Initial render
     this.render();
   }
 
+  disconnectedCallback() {
+    window.removeEventListener("hashchange", this.handleHashChange.bind(this));
+  }
+
+  handleHashChange() {
+    const hash = location.hash.replace("#/", "").toLowerCase();
+
+    if (this.crew.some((member) => member.name.toLowerCase() === hash)) {
+      this.dataset.selected = hash;
+      this.render();
+    }
+  }
+
   render() {
-    const selected =
-      app.state.selected?.toLowerCase() || this.crew[0]?.name.toLowerCase();
+    const selected = this.dataset.selected || "douglas-hurley";
+
     this.innerHTML = `
       <div class="grid-container grid-container--crew flow">
           <h1 class="numbered-title">
@@ -41,9 +41,9 @@ class CrewPage extends HTMLElement {
           </h1>
         ${this.crew
           .map(
-            (tech, index) => `
+            (tech) => `
               <picture id="${tech.role.toLowerCase().replace(" ", "")}-image" ${
-              index !== 0 ? "hidden" : ""
+              tech.name.toLowerCase() !== selected ? "hidden" : ""
             }>
                 <source srcset="${tech.images.webp}" media="(min-width: 55em)">
                 <img src="${tech.images.png}" alt="${tech.role}">
@@ -54,13 +54,13 @@ class CrewPage extends HTMLElement {
         <div class="dot-indicators flex" role="tablist">
           ${this.crew
             .map(
-              (tech, index) => `
-                <button class="fs-500" aria-selected="${
-                  index === 0
-                }" aria-controls="${tech.role
+              (tech) => `
+                <button name=${tech.name.toLowerCase()} class="fs-500" aria-selected="${
+                tech.name.toLowerCase() === selected
+              }" aria-controls="${tech.role
                 .toLowerCase()
                 .replace(" ", "")}-tab" role="tab" tabindex="${
-                index === 0 ? 0 : -1
+                tech.name.toLowerCase() === selected ? 0 : -1
               }"
                   data-image="${tech.role
                     .toLowerCase()
@@ -76,7 +76,9 @@ class CrewPage extends HTMLElement {
             (tech, index) => `
               <article class="crew-details flow" role="tabpanel" id="${tech.role
                 .toLowerCase()
-                .replace(" ", "")}-tab" ${index !== 0 ? "hidden" : ""}>
+                .replace(" ", "")}-tab" ${
+              tech.name.toLowerCase() !== selected ? "hidden" : ""
+            }>
                 <header class="flow flow--space-small">
                   <h2 class="fs-600 ff-serif uppercase">The terminology...</h2>
                   <p class="fs-700 uppercase ff-serif">${tech.name}</p>

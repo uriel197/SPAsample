@@ -8,7 +8,6 @@ export const app = {
   },
   setState(newState) {
     this.state = { ...this.state, ...newState };
-    document.dispatchEvent(new CustomEvent("statechange"));
   },
 };
 
@@ -19,18 +18,4 @@ export async function loadData() {
   } catch (error) {
     console.error("Failed to load data:", error);
   }
-}
-
-export async function getItemById(id) {
-  if (!app.state.menu) {
-    await loadData();
-  }
-  for (let category of app.state.menu) {
-    for (let item of category.content) {
-      if (item.id === Number(id)) {
-        return item;
-      }
-    }
-  }
-  return null;
 }
