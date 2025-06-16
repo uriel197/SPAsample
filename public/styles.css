@@ -547,14 +547,14 @@ body {
   background-attachment: fixed;
 }
 
-@media (min-width: 35rem) {
+@media (min-width: 35rem) and (max-width: 45rem) {
   .home {
     background-position: center center;
     background-image: url(./assets/home/background-home-tablet.jpg);
   }
 }
 
-@media (min-width: 55rem) {
+@media (min-width: 45rem) {
   .home {
     background-image: url(./assets/home/background-home-desktop.jpg);
   }
@@ -567,14 +567,14 @@ body {
   background-attachment: fixed;
 }
 
-@media (min-width: 35rem) {
+@media (min-width: 35rem) and (max-width: 45rem) {
   .destination {
     background-position: center center;
     background-image: url(./assets/destination/background-destination-tablet.jpg);
   }
 }
 
-@media (min-width: 55rem) {
+@media (min-width: 45rem) {
   .destination {
     background-image: url(./assets/destination/background-destination-desktop.jpg);
   }
@@ -586,14 +586,14 @@ body {
   background-attachment: fixed;
 }
 
-@media (min-width: 35rem) {
+@media (min-width: 35rem) and (max-width: 45rem) {
   .crew {
     background-position: center center;
     background-image: url(./assets/crew/background-crew-tablet.jpg);
   }
 }
 
-@media (min-width: 55rem) {
+@media (min-width: 45rem) {
   .crew {
     background-image: url(./assets/crew/background-crew-desktop.jpg);
   }
@@ -606,14 +606,14 @@ body {
   background-attachment: fixed;
 }
 
-@media (min-width: 35rem) {
+@media (min-width: 35rem) and (max-width: 45rem) {
   .technology {
     background-position: center center;
     background-image: url(./assets/technology/background-technology-tablet.jpg);
   }
 }
 
-@media (min-width: 55rem) {
+@media (min-width: 45rem) {
   .technology {
     background-image: url(./assets/technology/background-technology-desktop.jpg);
   }

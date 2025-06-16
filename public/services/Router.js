@@ -15,21 +15,10 @@ const Router = {
   },
 
   go: (route, addToHistory = true) => {
-    let defaultHash = "";
     if (addToHistory) {
-      if (route === "/destination") {
-        defaultHash = "moon";
-      } else if (route === "/crew") {
-        defaultHash = "douglas-hurley";
-      } else if (route === "/technology") {
-        defaultHash = "launch-vehicle";
-      }
-      history.pushState(
-        { route },
-        "",
-        defaultHash ? `${route}#/${defaultHash}` : route
-      );
+      history.pushState({ route }, "", route);
     }
+
     const bodyClasses = {
       "/index.html": "home",
       "/": "home",
@@ -51,7 +40,7 @@ const Router = {
     }
     let pageElement = null;
     const main = document.querySelector("#main");
-    main.innerHTML = "";
+    //main.innerHTML = "";
     switch (route) {
       case "/":
       case "/index.html":
@@ -59,36 +48,29 @@ const Router = {
         break;
       case "/destination":
         pageElement = document.createElement("destination-page");
-        pageElement.dataset.selected = defaultHash || "moon";
+        // pageElement.dataset.selected = defaultHash || "moon";
+        pageElement.dataset.selected =
+          location.hash.replace("#/", "") || "moon";
         break;
       case "/crew":
         pageElement = document.createElement("crew-page");
-        pageElement.dataset.selected = defaultHash || "douglas-hurley";
+        // pageElement.dataset.selected = defaultHash || "douglas-hurley";
+        pageElement.dataset.selected =
+          location.hash.replace("#/", "") || "douglas-hurley";
         break;
       case "/technology":
         pageElement = document.createElement("technology-page");
-        pageElement.dataset.selected = defaultHash || "launch-vehicle";
+        // pageElement.dataset.selected = defaultHash || "launch-vehicle";
+        pageElement.dataset.selected =
+          location.hash.replace("#/", "") || "launch-vehicle";
         break;
       default:
         pageElement = document.createElement("div");
         pageElement.textContent = "404 Not Found";
     }
     if (pageElement) {
-      const currentPage = main.firstElementChild;
-      if (currentPage) {
-        const fadeOut = currentPage.animate([{ opacity: 1 }, { opacity: 0 }], {
-          duration: 300,
-        });
-        fadeOut.onfinish = () => {
-          main.innerHTML = "";
-          main.appendChild(pageElement);
-          pageElement.animate([{ opacity: 0 }, { opacity: 1 }], {
-            duration: 300,
-          });
-        };
-      } else {
-        main.appendChild(pageElement);
-      }
+      main.innerHTML = "";
+      main.appendChild(pageElement);
       document.querySelectorAll(".primary-navigation li").forEach((li) => {
         li.classList.remove("active");
         const link = li.querySelector("a");

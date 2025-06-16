@@ -1,7 +1,4 @@
 // components/HomePage.js
-import { app } from "../services/Menu.js";
-import Router from "../services/Router.js";
-
 class HomePage extends HTMLElement {
   constructor() {
     super();

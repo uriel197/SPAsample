@@ -13,22 +13,52 @@ class CrewPage extends HTMLElement {
     }
     this.crew =
       app.state.menu.find((cat) => cat.name === "crew")?.content || [];
+    this.addEventListener("click", this.handleTabClick.bind(this));
     window.addEventListener("hashchange", this.handleHashChange.bind(this));
-    // Initial render
     this.render();
+    if (!location.hash) {
+      window.location.hash = `#/${this.dataset.selected || "douglas-hurley"}`;
+    }
   }
 
-  disconnectedCallback() {
-    window.removeEventListener("hashchange", this.handleHashChange.bind(this));
+  handleTabClick(event) {
+    const targetTab = event.target.closest("button[role='tab']");
+    if (targetTab) {
+      changeTabPanel.call(this, event);
+    }
   }
 
   handleHashChange() {
-    const hash = location.hash.replace("#/", "").toLowerCase();
-
-    if (this.crew.some((member) => member.name.toLowerCase() === hash)) {
+    const hash = location.hash
+      .replace("#/", "")
+      .toLowerCase()
+      .replace(" ", "-");
+    if (
+      this.crew.some(
+        (member) => member.name.toLowerCase().replace(" ", "-") === hash
+      )
+    ) {
       this.dataset.selected = hash;
-      this.render();
     }
+  }
+
+  updateContent() {
+    const selected = this.dataset.selected || "douglas-hurley";
+    this.querySelectorAll('[role="tab"]').forEach((tab) => {
+      const isSelected = tab.getAttribute("name") === selected;
+      tab.setAttribute("aria-selected", isSelected);
+      tab.setAttribute("tabindex", isSelected ? "0" : "-1");
+    });
+    this.querySelectorAll("picture").forEach((pic) =>
+      pic.setAttribute("hidden", true)
+    );
+    const image = this.querySelector(`#${selected}-image`);
+    if (image) image.removeAttribute("hidden");
+    this.querySelectorAll('[role="tabpanel"]').forEach((panel) =>
+      panel.setAttribute("hidden", true)
+    );
+    const panel = this.querySelector(`#${selected}-tab`);
+    if (panel) panel.removeAttribute("hidden");
   }
 
   render() {
@@ -41,12 +71,18 @@ class CrewPage extends HTMLElement {
           </h1>
         ${this.crew
           .map(
-            (tech) => `
-              <picture id="${tech.role.toLowerCase().replace(" ", "")}-image" ${
-              tech.name.toLowerCase() !== selected ? "hidden" : ""
+            (member) => `
+              <picture id="${member.role
+                .toLowerCase()
+                .replace(" ", "")}-image" ${
+              member.name.toLowerCase().replace(" ", "-") !== selected
+                ? "hidden"
+                : ""
             }>
-                <source srcset="${tech.images.webp}" media="(min-width: 55em)">
-                <img src="${tech.images.png}" alt="${tech.role}">
+                <source srcset="${
+                  member.images.webp
+                }" media="(min-width: 45em)">
+                <img src="${member.images.png}" alt="${member.role}">
               </picture>
             `
           )
@@ -54,18 +90,22 @@ class CrewPage extends HTMLElement {
         <div class="dot-indicators flex" role="tablist">
           ${this.crew
             .map(
-              (tech) => `
-                <button name=${tech.name.toLowerCase()} class="fs-500" aria-selected="${
-                tech.name.toLowerCase() === selected
-              }" aria-controls="${tech.role
+              (member) => `
+                <button name=${member.name
+                  .toLowerCase()
+                  .replace(" ", "-")} class="fs-500" aria-selected="${
+                member.name.toLowerCase().replace(" ", "-") === selected
+              }" aria-controls="${member.role
                 .toLowerCase()
                 .replace(" ", "")}-tab" role="tab" tabindex="${
-                tech.name.toLowerCase() === selected ? 0 : -1
+                member.name.toLowerCase().replace(" ", "-") === selected
+                  ? 0
+                  : -1
               }"
-                  data-image="${tech.role
+                  data-image="${member.role
                     .toLowerCase()
                     .replace(" ", "")}-image">
-                  <span class="sr-only">${tech.role}</span>
+                  <span class="sr-only">${member.role}</span>
                 </button>
               `
             )
@@ -73,17 +113,19 @@ class CrewPage extends HTMLElement {
         </div>
         ${this.crew
           .map(
-            (tech, index) => `
-              <article class="crew-details flow" role="tabpanel" id="${tech.role
+            (member) => `
+              <article class="crew-details flow" role="tabpanel" id="${member.role
                 .toLowerCase()
                 .replace(" ", "")}-tab" ${
-              tech.name.toLowerCase() !== selected ? "hidden" : ""
+              member.name.toLowerCase().replace(" ", "-") !== selected
+                ? "hidden"
+                : ""
             }>
                 <header class="flow flow--space-small">
                   <h2 class="fs-600 ff-serif uppercase">The terminology...</h2>
-                  <p class="fs-700 uppercase ff-serif">${tech.name}</p>
+                  <p class="fs-700 uppercase ff-serif">${member.name}</p>
                 </header>
-                <p class="text-accent max-width">${tech.bio}</p>
+                <p class="text-accent max-width">${member.bio}</p>
               </article>
             `
           )
@@ -94,9 +136,9 @@ class CrewPage extends HTMLElement {
       "keydown",
       changeTabFocus.bind(this)
     );
-    this.querySelectorAll('[role="tab"]').forEach((tab) =>
-      tab.addEventListener("click", changeTabPanel.bind(this))
-    );
+    // this.querySelectorAll('[role="tab"]').forEach((tab) =>
+    //   tab.addEventListener("click", changeTabPanel.bind(this))
+    // );
   }
 }
 

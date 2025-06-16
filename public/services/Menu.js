@@ -4,7 +4,7 @@ import API from "./API.js";
 export const app = {
   state: {
     menu: null, // Stores data.json content
-    selected: null, // Tracks selected item (e.g., "moon" for destination)
+    selected: null,
   },
   setState(newState) {
     this.state = { ...this.state, ...newState };

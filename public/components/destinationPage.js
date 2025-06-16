@@ -8,33 +8,61 @@ class DestinationPage extends HTMLElement {
   }
 
   async connectedCallback() {
-    // Load data if not already loaded
     if (!app.state.menu) {
       await loadData();
-      console.log(app.state.menu);
     }
+    console.log(app.state);
+
     this.destinations =
       app.state.menu.find((cat) => cat.name === "destinations")?.content || [];
+    this.addEventListener("click", this.handleTabClick.bind(this));
     window.addEventListener("hashchange", this.handleHashChange.bind(this));
-
-    // Initial render
     this.render();
+    if (!location.hash) {
+      const locationHash = `#/${this.dataset.selected || "moon"}`;
+      window.location.hash = locationHash;
+    }
   }
 
-  disconnectedCallback() {
-    window.removeEventListener("hashchange", this.handleHashChange.bind(this));
+  handleTabClick(event) {
+    const targetTab = event.target.closest("button[role='tab']");
+    if (targetTab) {
+      changeTabPanel.call(this, event);
+    }
   }
 
   handleHashChange() {
     const hash = location.hash.replace("#/", "").toLowerCase();
     if (this.destinations.some((dest) => dest.name.toLowerCase() === hash)) {
       this.dataset.selected = hash;
-      this.render();
     }
   }
 
+  updateContent() {
+    const selected = this.dataset.selected;
+    app.setState({ selected });
+    console.log(app.state);
+
+    this.querySelectorAll('[role="tab"]').forEach((tab) => {
+      const isSelected = tab.getAttribute("name") === selected;
+      tab.setAttribute("aria-selected", isSelected);
+      tab.setAttribute("tabindex", isSelected ? "0" : "-1");
+    });
+    this.querySelectorAll("picture").forEach((pic) =>
+      pic.setAttribute("hidden", true)
+    );
+    const image = this.querySelector(`#${selected}-image`);
+
+    if (image) image.removeAttribute("hidden");
+    this.querySelectorAll('[role="tabpanel"]').forEach((panel) =>
+      panel.setAttribute("hidden", true)
+    );
+    const panel = this.querySelector(`#${selected}-tab`);
+    if (panel) panel.removeAttribute("hidden");
+  }
+
   render() {
-    const selected = this.dataset.selected || "moon";
+    const selected = this.dataset.selected;
     this.innerHTML = `
         <div class="grid-container grid-container--destination flow">
           <h1 class="numbered-title"><span aria-hidden="true">01</span> Pick your destination</h1>
@@ -54,14 +82,16 @@ class DestinationPage extends HTMLElement {
             ${this.destinations
               .map(
                 (dest) => `
-                  <button name=${dest.name.toLowerCase()} aria-selected="${
-                  dest.name.toLowerCase() === selected
-                }" role="tab" aria-controls="${dest.name.toLowerCase()}-tab"
+                  <button 
                     class="uppercase ff-sans-cond text-accent letter-spacing-2"
+                    name=${dest.name.toLowerCase()} 
+                    aria-selected="${dest.name.toLowerCase() === selected}" 
+                    role="tab" 
+                    aria-controls="${dest.name.toLowerCase()}-tab"
                     tabindex="${dest.name.toLowerCase() === selected ? 0 : -1}"
-                    data-image="${dest.name.toLowerCase()}-image">${
-                  dest.name
-                }</button>
+                    data-image="${dest.name.toLowerCase()}-image">
+                    ${dest.name}
+                  </button>
                 `
               )
               .join("")}
@@ -69,10 +99,11 @@ class DestinationPage extends HTMLElement {
           ${this.destinations
             .map(
               (dest) => `
-                <article class="destination-info flow" id="${dest.name.toLowerCase()}-tab"
-                  role="tabpanel" ${
-                    dest.name.toLowerCase() !== selected ? "hidden" : ""
-                  }>
+                <article class="destination-info flow" 
+                    id="${dest.name.toLowerCase()}-tab"
+                    role="tabpanel" ${
+                      dest.name.toLowerCase() !== selected ? "hidden" : ""
+                    }>
                   <h2 class="fs-800 uppercase ff-serif">${dest.name}</h2>
                   <p>${dest.description}</p>
                   <div class="destination-meta flex">
@@ -96,9 +127,6 @@ class DestinationPage extends HTMLElement {
     this.querySelector('[role="tablist"]').addEventListener(
       "keydown",
       changeTabFocus.bind(this)
-    );
-    this.querySelectorAll('[role="tab"]').forEach((tab) =>
-      tab.addEventListener("click", changeTabPanel.bind(this))
     );
   }
 }

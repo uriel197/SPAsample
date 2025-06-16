@@ -13,21 +13,52 @@ class TechnologyPage extends HTMLElement {
     }
     this.technologies =
       app.state.menu.find((cat) => cat.name === "technology")?.content || [];
+    this.addEventListener("click", this.handleTabClick.bind(this));
     window.addEventListener("hashchange", this.handleHashChange.bind(this));
-    // Initial render
     this.render();
+    if (!location.hash) {
+      window.location.hash = `#/${this.dataset.selected || "launch-vehicle"}`;
+    }
   }
 
-  disconnectedCallback() {
-    window.removeEventListener("hashchange", this.handleHashChange.bind(this));
+  handleTabClick(event) {
+    const targetTab = event.target.closest("button[role='tab']");
+    if (targetTab) {
+      changeTabPanel.call(this, event);
+    }
   }
 
   handleHashChange() {
-    const hash = location.hash.replace("#/", "").toLowerCase();
-    if (this.technologies.some((tech) => tech.name.toLowerCase() === hash)) {
+    const hash = location.hash
+      .replace("#/", "")
+      .toLowerCase()
+      .replace(" ", "-");
+    if (
+      this.technologies.some(
+        (tech) => tech.name.toLowerCase().replace(" ", "-") === hash
+      )
+    ) {
       this.dataset.selected = hash;
-      this.render();
     }
+  }
+
+  updateContent() {
+    const selected = this.dataset.selected || "launch-vehicle";
+    this.querySelectorAll('[role="tab"]').forEach((tab) => {
+      const isSelected = tab.getAttribute("name") === selected;
+      tab.setAttribute("aria-selected", isSelected);
+      tab.setAttribute("tabindex", isSelected ? "0" : "-1");
+    });
+    this.querySelectorAll("picture").forEach((pic) =>
+      pic.setAttribute("hidden", true)
+    );
+    const image = this.querySelector(`#${selected}-image`);
+    if (image) image.removeAttribute("hidden");
+    this.querySelectorAll('[role="tabpanel"]').forEach((panel) =>
+      panel.setAttribute("hidden", true)
+    );
+    const panel = this.querySelector(`#${selected}-tab`);
+    if (panel) panel.removeAttribute("hidden");
   }
 
   render() {
@@ -39,15 +70,15 @@ class TechnologyPage extends HTMLElement {
           ${this.technologies
             .map(
               (tech) => `
-                <picture id="${tech.name.toLowerCase().replace(" ", "")}-image"
+                <picture id="${tech.name.toLowerCase().replace(" ", "-")}-image"
                   ${
-                    tech.name.toLowerCase().replace(" ", "") !== selected
+                    tech.name.toLowerCase().replace(" ", "-") !== selected
                       ? "hidden"
                       : ""
                   }>
                   <source srcset="${
                     tech.images.portrait
-                  }" media="(min-width: 55em)">
+                  }" media="(min-width: 55rem)">
                   <img src="${tech.images.landscape}" alt="${
                 tech.name
               }" type="image/webp">
@@ -60,12 +91,22 @@ class TechnologyPage extends HTMLElement {
             ${this.technologies
               .map(
                 (tech, index) => `
-                  <button name=${tech.name.toLowerCase()} class="fs-500" aria-selected="${
-                  tech.name.toLowerCase() === selected
+                  <button name=${tech.name
+                    .toLowerCase()
+                    .replace(" ", "-")} class="fs-500" aria-selected="${
+                  tech.name.toLowerCase().replace(" ", "-") === selected
                 }"
-                    aria-controls="${tech.name.toLowerCase()}-tab" role="tab"
-                    tabindex="${tech.name.toLowerCase() === selected ? 0 : -1}"
-                    data-image="${tech.name.toLowerCase()}-image">${index + 1}
+                    aria-controls="${tech.name
+                      .toLowerCase()
+                      .replace(" ", "-")}-tab" role="tab"
+                    tabindex="${
+                      tech.name.toLowerCase().replace(" ", "-") === selected
+                        ? 0
+                        : -1
+                    }"
+                    data-image="${tech.name
+                      .toLowerCase()
+                      .replace(" ", "-")}-image">${index + 1}
                     <span class="sr-only">${tech.name}</span>
                   </button>
                 `
@@ -76,8 +117,12 @@ class TechnologyPage extends HTMLElement {
             .map(
               (tech) => `
                 <article class="technology-details flow" role="tabpanel"
-                  id="${tech.name.toLowerCase()}-tab"
-                  ${tech.name.toLowerCase() !== selected ? "hidden" : ""}>
+                  id="${tech.name.toLowerCase().replace(" ", "-")}-tab"
+                  ${
+                    tech.name.toLowerCase().replace(" ", "-") !== selected
+                      ? "hidden"
+                      : ""
+                  }>
                   <header class="flow">
                     <h2 class="fs-400 ff-serif uppercase">The terminology...</h2>
                     <p class="fs-700 uppercase ff-serif">${tech.name}</p>
