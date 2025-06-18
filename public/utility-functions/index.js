@@ -1,3 +1,5 @@
+import { app } from "../services/Menu.js";
+
 export function changeTabPanel(e) {
   const targetTab = e.target.closest("button[role='tab']");
   if (!targetTab) {
@@ -5,8 +7,8 @@ export function changeTabPanel(e) {
     return;
   }
   const name = targetTab.getAttribute("name").toLowerCase();
-  if (this.dataset.selected !== name) {
-    this.dataset.selected = name;
+  if (app.state.selected !== name) {
+    app.setState({ selected: name });
     window.location.hash = `#/${name}`;
     this.updateContent(); // Trigger updateContent
   }

@@ -1,3 +1,5 @@
+import { app } from "./Menu.js";
+
 const Router = {
   init: () => {
     document.addEventListener("click", (event) => {
@@ -48,20 +50,16 @@ const Router = {
         break;
       case "/destination":
         pageElement = document.createElement("destination-page");
-        // pageElement.dataset.selected = defaultHash || "moon";
-        pageElement.dataset.selected =
-          location.hash.replace("#/", "") || "moon";
+        app.state.selected = location.hash.replace("#/", "") || "moon";
         break;
       case "/crew":
         pageElement = document.createElement("crew-page");
-        // pageElement.dataset.selected = defaultHash || "douglas-hurley";
-        pageElement.dataset.selected =
+        app.state.selected =
           location.hash.replace("#/", "") || "douglas-hurley";
         break;
       case "/technology":
         pageElement = document.createElement("technology-page");
-        // pageElement.dataset.selected = defaultHash || "launch-vehicle";
-        pageElement.dataset.selected =
+        app.state.selected =
           location.hash.replace("#/", "") || "launch-vehicle";
         break;
       default:
@@ -81,6 +79,12 @@ const Router = {
         ) {
           li.classList.add("active");
         }
+        li.addEventListener("click", (e) => {
+          const ul = e.target.closest("[data-visible]");
+          const hamburger = document.querySelector(".mobile-nav-toggle");
+          ul.dataset.visible === "true" ? (ul.dataset.visible = "false") : null;
+          hamburger.ariaExpanded = false;
+        });
       });
     }
     window.scrollTo(0, 0);

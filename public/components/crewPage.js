@@ -14,10 +14,11 @@ class CrewPage extends HTMLElement {
     this.crew =
       app.state.menu.find((cat) => cat.name === "crew")?.content || [];
     this.addEventListener("click", this.handleTabClick.bind(this));
-    window.addEventListener("hashchange", this.handleHashChange.bind(this));
+    this.addEventListener("keydown", this.handleTabFocus.bind(this));
     this.render();
     if (!location.hash) {
-      window.location.hash = `#/${this.dataset.selected || "douglas-hurley"}`;
+      const locationHash = `#/${app.state.selected}`;
+      window.location.hash = locationHash;
     }
   }
 
@@ -28,22 +29,17 @@ class CrewPage extends HTMLElement {
     }
   }
 
-  handleHashChange() {
-    const hash = location.hash
-      .replace("#/", "")
-      .toLowerCase()
-      .replace(" ", "-");
-    if (
-      this.crew.some(
-        (member) => member.name.toLowerCase().replace(" ", "-") === hash
-      )
-    ) {
-      this.dataset.selected = hash;
+  handleTabFocus(event) {
+    const targetTab = event.target.closest("button[role='tab']");
+    if (targetTab) {
+      changeTabFocus.call(this, event);
     }
   }
 
   updateContent() {
-    const selected = this.dataset.selected || "douglas-hurley";
+    const selected = app.state.selected;
+    console.log(selected);
+
     this.querySelectorAll('[role="tab"]').forEach((tab) => {
       const isSelected = tab.getAttribute("name") === selected;
       tab.setAttribute("aria-selected", isSelected);
@@ -62,7 +58,7 @@ class CrewPage extends HTMLElement {
   }
 
   render() {
-    const selected = this.dataset.selected || "douglas-hurley";
+    const selected = app.state.selected;
 
     this.innerHTML = `
       <div class="grid-container grid-container--crew flow">
@@ -132,13 +128,6 @@ class CrewPage extends HTMLElement {
           .join("")}
       </div>
     `;
-    this.querySelector('[role="tablist"]').addEventListener(
-      "keydown",
-      changeTabFocus.bind(this)
-    );
-    // this.querySelectorAll('[role="tab"]').forEach((tab) =>
-    //   tab.addEventListener("click", changeTabPanel.bind(this))
-    // );
   }
 }
 

@@ -11,15 +11,14 @@ class DestinationPage extends HTMLElement {
     if (!app.state.menu) {
       await loadData();
     }
-    console.log(app.state);
 
     this.destinations =
       app.state.menu.find((cat) => cat.name === "destinations")?.content || [];
     this.addEventListener("click", this.handleTabClick.bind(this));
-    window.addEventListener("hashchange", this.handleHashChange.bind(this));
+    this.addEventListener("keydown", this.handleTabFocus.bind(this));
     this.render();
     if (!location.hash) {
-      const locationHash = `#/${this.dataset.selected || "moon"}`;
+      const locationHash = `#/${app.state.selected}`;
       window.location.hash = locationHash;
     }
   }
@@ -31,17 +30,16 @@ class DestinationPage extends HTMLElement {
     }
   }
 
-  handleHashChange() {
-    const hash = location.hash.replace("#/", "").toLowerCase();
-    if (this.destinations.some((dest) => dest.name.toLowerCase() === hash)) {
-      this.dataset.selected = hash;
+  handleTabFocus(event) {
+    const targetTab = event.target.closest("button[role='tab']");
+    if (targetTab) {
+      changeTabFocus.call(this, event);
     }
   }
 
   updateContent() {
-    const selected = this.dataset.selected;
-    app.setState({ selected });
-    console.log(app.state);
+    const selected = app.state.selected;
+    console.log(selected);
 
     this.querySelectorAll('[role="tab"]').forEach((tab) => {
       const isSelected = tab.getAttribute("name") === selected;
@@ -62,7 +60,7 @@ class DestinationPage extends HTMLElement {
   }
 
   render() {
-    const selected = this.dataset.selected;
+    const selected = app.state.selected;
     this.innerHTML = `
         <div class="grid-container grid-container--destination flow">
           <h1 class="numbered-title"><span aria-hidden="true">01</span> Pick your destination</h1>
@@ -122,12 +120,6 @@ class DestinationPage extends HTMLElement {
             .join("")}
         </div>
       `;
-
-    // Add tab event listeners
-    this.querySelector('[role="tablist"]').addEventListener(
-      "keydown",
-      changeTabFocus.bind(this)
-    );
   }
 }
 
