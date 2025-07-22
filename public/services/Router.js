@@ -42,6 +42,7 @@ const Router = {
     }
     let pageElement = null;
     const main = document.querySelector("#main");
+    const currentPage = main.firstElementChild;
     //main.innerHTML = "";
     switch (route) {
       case "/":
@@ -68,7 +69,27 @@ const Router = {
     }
     if (pageElement) {
       main.innerHTML = "";
-      main.appendChild(pageElement);
+      //main.appendChild(pageElement);
+      const wrapper = document.createElement("div");
+      //wrapper.style.opacity = "0";
+      wrapper.appendChild(pageElement);
+      if (currentPage) {
+        const fadeOut = currentPage.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: 200,
+        });
+        fadeOut.onfinish = () => {
+          main.innerHTML = "";
+          main.appendChild(wrapper);
+          wrapper.animate([{ opacity: 0 }, { opacity: 1 }], {
+            duration: 200,
+          });
+        };
+      } else {
+        main.appendChild(wrapper);
+        wrapper.animate([{ opacity: 0 }, { opacity: 1 }], {
+          duration: 200,
+        });
+      }
       document.querySelectorAll(".primary-navigation li").forEach((li) => {
         li.classList.remove("active");
         const link = li.querySelector("a");

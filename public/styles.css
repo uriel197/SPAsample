@@ -654,6 +654,11 @@ main {
 
 /* destination layout */
 
+/* public/index.css */
+.grid-container--destination {
+  opacity: 1;
+}
+
 .grid-container--destination {
   --flow-space: 2rem;
   grid-template-areas:

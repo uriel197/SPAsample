@@ -9,4 +9,4 @@ app.use((req, res) => {
   res.sendFile(indexPath);
 });
 
-app.listen(5500, () => console.log("Server on http://localhost:5500"));
+app.listen(5500, () => console.log("Server on http://localhost:5500..."));

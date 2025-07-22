@@ -5,8 +5,6 @@ class HomePage extends HTMLElement {
   }
 
   connectedCallback() {
-    // Listen for state changes
-    document.addEventListener("statechange", () => this.render());
     // Initial render
     this.render();
   }

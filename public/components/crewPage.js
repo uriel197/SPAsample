@@ -38,7 +38,6 @@ class CrewPage extends HTMLElement {
 
   updateContent() {
     const selected = app.state.selected;
-    console.log(selected);
 
     this.querySelectorAll('[role="tab"]').forEach((tab) => {
       const isSelected = tab.getAttribute("name") === selected;
